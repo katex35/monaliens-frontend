@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "MONALIENS NFT Collection Website on MONAD Network",
   "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:vercel": "npm install --legacy-peer-deps && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
