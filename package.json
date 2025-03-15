@@ -1,7 +1,7 @@
 {
-  "name": "animation-web",
+  "name": "monaliens-frontend",
   "version": "1.0.0",
-  "description": "A simple web app to display an animation",
+  "description": "MONALIENS NFT Collection Website on MONAD Network",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
@@ -10,10 +10,21 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@web3modal/ethereum": "^2.7.1",
     "ajv": "^8.17.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-scripts": "^5.0.0"
+    "axios": "^1.8.3",
+    "ethers": "^6.13.5",
+    "framer-motion": "^11.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "react-intersection-observer": "^9.16.0",
+    "react-router-dom": "^6.30.0",
+    "react-scripts": "^5.0.1",
+    "styled-components": "^6.1.15",
+    "viem": "^2.23.11",
+    "wagmi": "^2.14.13",
+    "web3modal": "^1.9.12"
   },
   "eslintConfig": {
     "extends": [
