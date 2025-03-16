@@ -167,6 +167,7 @@ const Navbar = () => {
           <NavLink to="/">Home</NavLink>
           <NavLink to="/gallery">Gallery</NavLink>
           <NavLink to="/staking">Staking</NavLink>
+          <NavLink to="/spin">Spin & Win</NavLink>
           <NavLink to="/profile">Profile</NavLink>
           <NavLink to="/docs">Docs</NavLink>
         </NavLinks>
@@ -190,6 +191,7 @@ const Navbar = () => {
         <MobileNavLink to="/" onClick={toggleMobileMenu}>Home</MobileNavLink>
         <MobileNavLink to="/gallery" onClick={toggleMobileMenu}>Gallery</MobileNavLink>
         <MobileNavLink to="/staking" onClick={toggleMobileMenu}>Staking</MobileNavLink>
+        <MobileNavLink to="/spin" onClick={toggleMobileMenu}>Spin & Win</MobileNavLink>
         <MobileNavLink to="/profile" onClick={toggleMobileMenu}>Profile</MobileNavLink>
         <MobileNavLink to="/docs" onClick={toggleMobileMenu}>Docs</MobileNavLink>
       </MobileMenu>

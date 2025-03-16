@@ -7,6 +7,7 @@ import GalleryPage from './pages/GalleryPage';
 import StakingPage from './pages/StakingPage';
 import ProfilePage from './pages/ProfilePage';
 import DocsPage from './pages/DocsPage';
+import SpinPage from './pages/SpinPage';
 import ScrollToTop from './components/ScrollToTop';
 import { WalletProvider } from './context/WalletContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/staking" element={<StakingPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/docs" element={<DocsPage />} />
+                <Route path="/spin" element={<SpinPage />} />
               </Routes>
             </main>
           </div>

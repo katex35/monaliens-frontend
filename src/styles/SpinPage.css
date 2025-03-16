@@ -1,0 +1,497 @@
+/* Modern Spin Sayfası Tasarımı - Tamamen Yenilenmiş */
+:root {
+  --primary-color: #c22027;
+  --primary-dark: #8c1111;
+  --primary-light: #d62d2d;
+  --accent-color: #750909;
+  --background-dark: #1a0808;
+  --background-darker: #120404;
+  --background-card: #2a0808;
+  --background-item: #3a0909;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --border-color: rgba(255, 0, 0, 0.2);
+  --indicator-color: #ff3333;
+  --border-radius-lg: 12px;
+  --border-radius-md: 6px;
+  --border-radius-sm: 4px;
+  --shadow-dark: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --success-color: #00d09c;
+  --warning-color: #ffb800;
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --shadow-strong: 0 10px 40px rgba(0, 0, 0, 0.25);
+  --transition-smooth: 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.spin-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+  color: var(--text-primary);
+  background-color: var(--background-dark);
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+/* Başlık Bölümü */
+.spin-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  width: 100%;
+  position: relative;
+}
+
+.spin-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  margin: 0;
+  text-transform: uppercase;
+  background-color: var(--background-card);
+  display: inline-block;
+  padding: 0.7rem 2rem;
+  border-radius: 25px;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+}
+
+/* Spin Konteyneri - Görsele Benzer */
+.spin-container {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  margin: 1.5rem 0;
+  overflow: hidden;
+  background-color: var(--background-card);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+}
+
+/* Ödül Şeridi */
+.rewards-row {
+  position: absolute;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  will-change: transform;
+  transition: transform 0.2s linear;
+}
+
+/* Ödül Öğeleri - Minimal ve Görsele Uygun */
+.reward-item {
+  flex: 0 0 110px;
+  height: 160px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.reward-icon {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: 0.8rem;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+/* Try Again ikonu */
+.reward-icon.try_again {
+  background-color: #555;
+}
+
+.try-again-content {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 5px;
+}
+
+/* MONAD ve MONA Token Görünümleri */
+.monad-token, .mona-token {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.monad-stripes {
+  width: 45px;
+  height: 45px;
+  background: repeating-linear-gradient(
+    45deg,
+    #a02c2c 0px,
+    #a02c2c 5px,
+    #fff 5px,
+    #fff 10px
+  );
+  border-radius: 50%;
+}
+
+.mona-token span {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.reward-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  margin-top: 3px;
+}
+
+/* Gösterge Stilini İyileştirme */
+.indicator-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 3px;
+  filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.7));
+}
+
+.indicator {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--indicator-color);
+  overflow: visible;
+  box-shadow: 0 0 10px 2px rgba(255, 51, 51, 0.6);
+  animation: pulse 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    box-shadow: 0 0 10px 2px rgba(255, 51, 51, 0.6);
+  }
+  to {
+    box-shadow: 0 0 15px 3px rgba(255, 51, 51, 0.8);
+  }
+}
+
+.indicator::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 15px solid var(--indicator-color);
+  filter: drop-shadow(0 0 5px rgba(255, 51, 51, 0.7));
+}
+
+.indicator::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 15px solid var(--indicator-color);
+  filter: drop-shadow(0 0 5px rgba(255, 51, 51, 0.7));
+}
+
+/* Spin Durumu ve Aksiyonlar */
+.spin-status {
+  width: 100%;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.spin-status h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+.spin-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.spin-button,
+.claim-button {
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.spin-button {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.spin-button.spinning {
+  background-color: #555;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spin-button:hover:not(:disabled) {
+  background-color: var(--primary-light);
+}
+
+.spin-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.claim-button {
+  background-color: #333;
+  color: #ffffff;
+}
+
+.claim-button:hover {
+  background-color: #444;
+}
+
+/* Kazanma Bildirimi */
+.win-notification {
+  margin-top: 1rem;
+  padding: 0.8rem 1.5rem;
+  background-color: rgba(100, 0, 0, 0.2);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  border: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.win-icon {
+  font-size: 1.5rem;
+}
+
+.win-message {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Aktivite Bölümü */
+.activity-section {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.activity-section h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  text-align: center;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  background-color: var(--background-card);
+  display: inline-block;
+  padding: 0.7rem 2rem;
+  border-radius: 25px;
+  position: relative;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+}
+
+.activity-log {
+  width: 100%;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: var(--background-card);
+  border-radius: var(--border-radius-md);
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem;
+  border-bottom: 1px solid rgba(255, 0, 0, 0.1);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+}
+
+.user-address {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.activity-details {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.no-activity {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Scrollbar Styling */
+.activity-log::-webkit-scrollbar {
+  width: 4px;
+}
+
+.activity-log::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.activity-log::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.activity-log::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .spin-page {
+    padding: 0.5rem;
+  }
+  
+  .spin-header h2 {
+    font-size: 1.2rem;
+    padding: 0.6rem 1.5rem;
+  }
+  
+  .reward-item {
+    flex: 0 0 90px;
+  }
+  
+  .reward-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .reward-label {
+    font-size: 0.75rem;
+  }
+  
+  .spin-status h3 {
+    font-size: 1rem;
+  }
+  
+  .spin-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .spin-button,
+  .claim-button {
+    width: 100%;
+    padding: 0.6rem 1rem;
+  }
+  
+  .win-notification {
+    flex-direction: column;
+    padding: 0.6rem;
+  }
+  
+  .win-message {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+}
+
+/* Animasyon ve diğer stilleri temizleme */
+body {
+  background-color: var(--background-darker);
+  color: var(--text-primary);
+}
+
+/* Koyu Tema İyileştirmesi */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-dark: #1a0808;
+    --background-card: #2a0808;
+    --background-item: #3a0909;
+  }
+}
+
+/* Işık Efektleri */
+.indicator::before,
+.indicator::after {
+  filter: none;
+}
+
+.spin-button,
+.claim-button {
+  position: relative;
+}
+
+.spin-button::after,
+.claim-button::after {
+  display: none;
+} 
