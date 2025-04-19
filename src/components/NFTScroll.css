@@ -1,11 +1,12 @@
 .nft-scroll {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   overflow: visible;
-  height: 180px;
-  padding-top: 30px;
+  height: 11rem;
+  padding-top: 2rem;
+  z-index: 10;
 }
 
 .scroll-container {
@@ -27,9 +28,9 @@
 }
 
 .scroll-content img {
-  height: 150px;
+  height: 9rem;
   width: auto;
-  margin-right: 20px;
+  margin-right: 1.25rem;
   margin-bottom: 0;
   transition: transform 0.3s ease, filter 0.3s ease;
   transform-origin: bottom center;
@@ -37,7 +38,7 @@
 }
 
 .scroll-content img:hover {
-  transform: translateY(-20px) scale(1.1);
+  transform: translateY(-1.25rem) scale(1.1);
   filter: brightness(1.2);
   cursor: pointer;
 }
