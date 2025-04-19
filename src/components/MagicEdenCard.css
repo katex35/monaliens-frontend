@@ -1,0 +1,70 @@
+.magic-eden-card {
+  position: fixed;
+  bottom: 11rem;
+  right: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: white;
+  padding-left: 0.5rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  z-index: 10;
+}
+
+.magic-eden-card:hover {
+  border-radius: 1rem;
+  transform: scale(1.07);
+}
+
+.magic-eden-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.magic-eden-card:hover .magic-eden-logo {
+  border-radius: 0.5rem;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  gap: -0.125rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.buy-text {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #000;
+}
+
+.platform-text {
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: #000;
+}
+
+@media (max-width: 768px) {
+  .buy-text {
+    font-size: 0.625rem;
+  }
+  
+  .platform-text {
+    font-size: 0.875rem;
+  }
+  
+  .magic-eden-logo {
+    width: 2.5rem;
+  }
+} 

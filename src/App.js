@@ -1,39 +1,20 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './styles/App.css';
-import Navbar from './components/Navbar';
-import HomePage from './pages/HomePage';
-import GalleryPage from './pages/GalleryPage';
-import StakingPage from './pages/StakingPage';
-import ProfilePage from './pages/ProfilePage';
-import DocsPage from './pages/DocsPage';
-import SpinPage from './pages/SpinPage';
-import ScrollToTop from './components/ScrollToTop';
-import { WalletProvider } from './context/WalletContext';
-import { ThemeProvider } from './context/ThemeContext';
+import './App.css';
+import Header from './components/Header';
+import NFTScroll from './components/NFTScroll';
+import MagicEdenCard from './components/MagicEdenCard';
 
 function App() {
   return (
-    <ThemeProvider>
-      <WalletProvider>
-        <Router>
-          <ScrollToTop />
-          <div className="App">
-            <Navbar />
-            <main className="main-content">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/gallery" element={<GalleryPage />} />
-                <Route path="/staking" element={<StakingPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/docs" element={<DocsPage />} />
-                <Route path="/spin" element={<SpinPage />} />
-              </Routes>
-            </main>
-          </div>
-        </Router>
-      </WalletProvider>
-    </ThemeProvider>
+    <div className="app">
+      <Header />
+      <div 
+        data-us-project="MdCXQQFs4xkeVlwhrGKV" 
+        className="background-animation"
+      />
+      <MagicEdenCard />
+      <NFTScroll />
+    </div>
   );
 }
 

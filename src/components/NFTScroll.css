@@ -1,0 +1,52 @@
+.nft-scroll {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: visible;
+  height: 180px;
+  padding-top: 30px;
+}
+
+.scroll-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  width: fit-content;
+}
+
+.scroll-content {
+  display: flex;
+  animation: scroll 50s linear infinite;
+  margin-bottom: 0;
+}
+
+.scroll-content:hover {
+  animation-play-state: running;
+}
+
+.scroll-content img {
+  height: 150px;
+  width: auto;
+  margin-right: 20px;
+  margin-bottom: 0;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  transform-origin: bottom center;
+  display: block;
+}
+
+.scroll-content img:hover {
+  transform: translateY(-20px) scale(1.1);
+  filter: brightness(1.2);
+  cursor: pointer;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+} 
