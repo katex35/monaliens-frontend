@@ -1,0 +1,58 @@
+.nft-stats {
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  height: 3rem;
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  background: linear-gradient(180deg, #000000 50.48%, rgba(0, 0, 0, 0) 100%);
+}
+
+.nft-stats-left h2 {
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.nft-stats-center {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.stat-item {
+  color: #fff;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-item img {
+  height: 1rem;
+  width: auto;
+}
+
+.value {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.click-to-buy {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.click-to-buy:hover {
+  opacity: 0.8;
+} 
