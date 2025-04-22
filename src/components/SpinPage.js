@@ -3,6 +3,13 @@ import { useWallet } from '../context/WalletContext';
 import { ethers } from 'ethers';
 import '../styles/SpinPage.css';
 
+// Ses dosyalarını import et
+import spinSound from '../assets/sounds/spin.mp3';
+import winSound from '../assets/sounds/win.mp3';
+import tryAgainSound from '../assets/sounds/try-again.mp3';
+import monadWinSound from '../assets/sounds/monad-win.mp3';
+import monaWinSound from '../assets/sounds/mona-win.mp3';
+
 // Definition of rewards - Arranged as shown in the visual
 const REWARDS = [
   { id: 1, type: 'try_again', label: 'TRY AGAIN', chance: 25 },
@@ -38,107 +45,62 @@ const generateRewardRow = (count = 40) => {
 
 const SpinPage = () => {
   const { walletState, connectWallet } = useWallet();
-  const [freeSpins, setFreeSpins] = useState(3); // 3 free spins as shown in the visual
+  const [freeSpins, setFreeSpins] = useState(3);
   const [isSpinning, setIsSpinning] = useState(false);
   const [spinResult, setSpinResult] = useState(null);
   const spinRowRef = useRef(null);
   const [rewardRow] = useState(generateRewardRow());
   const [initialPosition, setInitialPosition] = useState(0);
-  const [lastPosition, setLastPosition] = useState(null); // New state to remember the last position
+  const [lastPosition, setLastPosition] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [txHash, setTxHash] = useState(null); // Transaction hash için state
-  const [txStatus, setTxStatus] = useState(null); // Transaction durumu için state
-  const [errorMessage, setErrorMessage] = useState(""); // Hata mesajları için
-  const [showError, setShowError] = useState(false); // Hata gösterim durumu
-  const [activities, setActivities] = useState([
-    {
-      id: 1,
-      address: 'Javid',
-      reward: { label: '0.1 MONAD' },
-      timestamp: new Date(Date.now() - 300000) // 5 minutes ago
-    },
-    {
-      id: 2,
-      address: '0x4f...6fdb',
-      reward: { label: '100 $MONA' },
-      timestamp: new Date(Date.now() - 960000) // 16 minutes ago
-    },
-    {
-      id: 3,
-      address: '0xad...0c7b',
-      reward: { label: '0.1 MONAD' },
-      timestamp: new Date(Date.now() - 1140000) // 19 minutes ago
-    }
-  ]);
+  const [txHash, setTxHash] = useState(null);
+  const [txStatus, setTxStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showError, setShowError] = useState(false);
   
   const spinContainerRef = useRef(null);
   
-  // Setting animation values
-  const spinDuration = 4000; // 4 seconds
-  const itemWidth = 110; // Narrower reward items as in the visual
-  
-  // Prepare rewards on initial load
+  const spinDuration = 4000;
+  const itemWidth = 110;
+
+  const spinSoundRef = useRef(new Audio(spinSound));
+  const winSoundRef = useRef(new Audio(winSound));
+  const tryAgainSoundRef = useRef(new Audio(tryAgainSound));
+  const monadWinSoundRef = useRef(new Audio(monadWinSound));
+  const monaWinSoundRef = useRef(new Audio(monaWinSound));
+
   useEffect(() => {
-    if (spinContainerRef.current && spinRowRef.current) {
-      // Center the rewards on initial load
-      initializeRewards();
+    const initializeSpinPosition = () => {
+      if (!spinContainerRef.current || !spinRowRef.current) return;
       
-      // Recenter when browser size changes
-      window.addEventListener('resize', initializeRewards);
-      
-      return () => {
-        window.removeEventListener('resize', initializeRewards);
-      };
-    }
-  }, []);
-  
-  // Preparation and centering of the reward strip
-  const initializeRewards = () => {
-    if (!spinContainerRef.current || !spinRowRef.current) return;
-    
-    const containerWidth = spinContainerRef.current.offsetWidth;
-    // Center position of the indicator
-    const centerPosition = containerWidth / 2;
-    
-    if (lastPosition === null) {
-      // İlk görünür ödül öğesini göstergeyle hizala
-      // Merkez hizalama için gerekli ilk ofset değerini hesapla
-      // Görünür ekranın ortasındaki işaretçi ile ilk ödülün hizalanması için
+      const containerWidth = spinContainerRef.current.offsetWidth;
+      const centerPosition = containerWidth / 2;
       const initialOffset = centerPosition - itemWidth / 2;
       
-      // Geçiş animasyonunu devre dışı bırak ve konuma anında taşı
       spinRowRef.current.style.transition = 'none';
       spinRowRef.current.style.transform = `translateX(${initialOffset}px)`;
-      
-      // Son konumu kaydet
       setLastPosition(initialOffset);
       
-      console.log(`Initial position set: ${initialOffset}`);
-    } else {
-      // Şerit yanlış konuma kaydıysa yeniden merkezle
-      const totalItems = rewardRow.length;
-      const totalWidth = totalItems * itemWidth;
+      // Force reflow
+      void spinRowRef.current.offsetHeight;
       
-      // Mevcut konumun ekranın çok dışında olup olmadığını kontrol et
-      if (Math.abs(lastPosition) > totalWidth / 2) {
-        const newPosition = centerPosition - itemWidth / 2;
-        
-        spinRowRef.current.style.transition = 'none';
-        spinRowRef.current.style.transform = `translateX(${newPosition}px)`;
-        
-        setLastPosition(newPosition);
-        console.log(`Recentered at: ${newPosition}`);
-      }
-    }
+      // Re-enable transitions after a short delay
+      setTimeout(() => {
+        if (spinRowRef.current) {
+          spinRowRef.current.style.transition = 'transform 0.2s linear';
+        }
+      }, 50);
+    };
+
+    // İlk yüklemede ve pencere boyutu değiştiğinde çalıştır
+    initializeSpinPosition();
+    window.addEventListener('resize', initializeSpinPosition);
     
-    // Yeniden akışı zorla
-    void spinRowRef.current.offsetHeight;
-    
-    // Animasyonu etkinleştir
-    setTimeout(() => {
-      spinRowRef.current.style.transition = 'transform 0.2s linear';
-    }, 50);
-  };
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', initializeSpinPosition);
+    };
+  }, [itemWidth]);
 
   // Reward selection function
   const selectRandomIndex = () => {
@@ -222,6 +184,26 @@ const SpinPage = () => {
         // İşlemi gönder
         txResponse = await signer.sendTransaction(tx);
         console.log("Transaction gönderildi:", txResponse.hash);
+        setTxHash(txResponse.hash);
+        setTxStatus("sent");
+        
+        // Transaction onayını bekle
+        console.log("Transaction onayı bekleniyor...");
+        await txResponse.wait();
+        console.log("Transaction onaylandı!");
+        setTxStatus("confirmed");
+        
+        // Transaction hash ve oluşturulan aktivite kaydıyla birlikte döndür
+        return { 
+          hash: txResponse.hash, 
+          activity: {
+            id: Date.now(),
+            address: walletState.address,
+            reward: { label: reward ? reward.label : 'Unknown' },
+            timestamp: new Date(),
+            txHash: txResponse.hash
+          }
+        };
       } catch (txError) {
         // İşlem gönderme hatası durumunda daha detaylı hata mesajı
         console.error("Transaction gönderme hatası:", txError);
@@ -247,43 +229,36 @@ const SpinPage = () => {
         setTxStatus("error");
         return null;
       }
-      
-      // Transaction hash'i kaydet
-      setTxHash(txResponse.hash);
-      setTxStatus("sent");
-      
-      // Kazanılan ödülü console'a kaydet
-      console.log(`Reward earned: ${reward ? reward.label : 'Unknown'}`);
-      
-      // Activity kaydını şimdi oluşturmuyoruz, spin animasyonu bitince eklenecek
-      const newActivity = {
-        id: Date.now(),
-        address: walletState.address,
-        reward: { label: reward ? reward.label : 'Unknown' },
-        timestamp: new Date(),
-        txHash: txResponse.hash
-      };
-      
-      // Daha sonra kullanmak üzere oluşturulan aktivite kaydını döndürüyoruz
-      // Activity listesine şimdi eklemiyoruz
-      
-      // Transaction onayını bekle
-      console.log("Waiting for transaction confirmation...");
-      try {
-        await txResponse.wait();
-        console.log("Transaction confirmed!");
-        setTxStatus("confirmed");
-      } catch (waitError) {
-        console.error("Transaction confirmation error:", waitError);
-        // Onaylama hatası olsa bile hash elimizde, başarılı sayabiliriz
-      }
-      
-      // Transaction hash ve oluşturulan aktivite kaydıyla birlikte döndür
-      return { hash: txResponse.hash, activity: newActivity };
     } catch (error) {
       console.error("Transaction error:", error);
       setTxStatus("error");
       return null;
+    }
+  };
+
+  // Ses çalma fonksiyonları
+  const playSpinSound = () => {
+    spinSoundRef.current.currentTime = 0;
+    spinSoundRef.current.play();
+  };
+
+  const playRewardSound = (rewardType) => {
+    switch(rewardType) {
+      case 'try_again':
+        tryAgainSoundRef.current.currentTime = 0;
+        tryAgainSoundRef.current.play();
+        break;
+      case 'monad':
+        monadWinSoundRef.current.currentTime = 0;
+        monadWinSoundRef.current.play();
+        break;
+      case 'mona':
+        monaWinSoundRef.current.currentTime = 0;
+        monaWinSoundRef.current.play();
+        break;
+      default:
+        winSoundRef.current.currentTime = 0;
+        winSoundRef.current.play();
     }
   };
 
@@ -309,8 +284,7 @@ const SpinPage = () => {
     setTxHash(null);
     setTxStatus(null);
     
-    // İşlem başlatıldığını göster (tam olarak dönmeye başlamayacak)
-    // Burada sadece "İşlem gönderiliyor..." gibi bir durum gösterilecek
+    // İşlem başlatıldığını göster
     setTxStatus("initiating");
     
     // Rastgele hedef indeks seç
@@ -341,6 +315,9 @@ const SpinPage = () => {
       // Transaction başarılıysa, spin işlemini başlat
       setIsSpinning(true);
       setFreeSpins(prev => prev - 1);
+
+      // Spin sesi çal - transaction onaylandıktan sonra
+      playSpinSound();
       
       // Şimdi spin animasyonunu başlat, ve activity kaydını bu fonksiyona gönder
       startSpinAnimation(targetIndex, selectedReward, pendingActivity);
@@ -471,132 +448,159 @@ const SpinPage = () => {
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        // Store final position for next spin
-        // Pozisyonu yuvarlayarak daha kesin bir hizalama sağlayalım
-        // itemWidth'e böl ve çarp ki tam ödül genişliğinin katlarına hizalansın
-        const finalAdjustedPosition = Math.round(finalPosition / itemWidth) * itemWidth;
-        spinRowRef.current.style.transform = `translateX(${finalAdjustedPosition}px)`;
-        setLastPosition(finalAdjustedPosition);
-        
-        console.log(`Animation complete. Final position: ${finalAdjustedPosition}px`);
-        
-        // Göstergeye en yakın ödülü daha doğru hesaplama
-        // Bu, göstergenin tam altındaki ödülü bulacak
-        setTimeout(() => {
-          // İlk olarak göstergenin tam pozisyonunu alalım
-          const indicatorRect = document.querySelector('.indicator').getBoundingClientRect();
-          const indicatorCenterX = indicatorRect.left + (indicatorRect.width / 2);
-          
-          // Tüm görünür ödülleri kontrol edelim ve hangisinin göstergenin altında olduğunu bulalım
-          const rewardItems = document.querySelectorAll('.reward-item');
-          let closestItem = null;
-          let minDistance = Number.MAX_VALUE;
-          
-          rewardItems.forEach((item, index) => {
-            const itemRect = item.getBoundingClientRect();
-            const itemCenterX = itemRect.left + (itemRect.width / 2);
-            const distance = Math.abs(indicatorCenterX - itemCenterX);
-            
-            if (distance < minDistance) {
-              minDistance = distance;
-              closestItem = {
-                element: item,
-                index: index % DISPLAY_ORDER.length
-              };
-            }
-          });
-          
-          // Eğer alınan mesafe çok büyükse (30px'den fazla), muhtemelen siyah bir boşlukta kalmıştır
-          // Bu durumda pozisyonu yeniden ayarlayalım
-          if (minDistance > 30 && rewardItems.length > 0) {
-            console.log(`Warning: Indicator might be in a gap, distance: ${minDistance}px`);
-            
-            // En yakın öğeyi alalım ve şeridi yeniden konumlandıralım
-            const closestItemRect = closestItem.element.getBoundingClientRect();
-            const closestItemCenterX = closestItemRect.left + (closestItemRect.width / 2);
-            const indicatorX = indicatorRect.left + (indicatorRect.width / 2);
-            
-            // Şeridi kaydırmak için gereken mesafeyi hesaplayalım
-            const adjustmentNeeded = indicatorX - closestItemCenterX;
-            
-            // Mevcut konumu alalım ve ayarlayalım
-            const currentTransform = getComputedStyle(spinRowRef.current).transform;
-            const matrix = new DOMMatrix(currentTransform);
-            const currentX = matrix.m41; // mevcut X transform değeri
-            
-            const newPosition = currentX - adjustmentNeeded;
-            spinRowRef.current.style.transition = 'transform 0.3s ease-out';
-            spinRowRef.current.style.transform = `translateX(${newPosition}px)`;
-            
-            // Son konumu güncelle
-            setLastPosition(newPosition);
-            
-            // Kısa bir süre bekleyip tekrar ödülü belirleme
-            setTimeout(() => determineWinningReward(), 350);
-            return;
-          }
-          
-          // Ödülü belirle ve UI'ı güncelle
-          determineWinningReward();
-          
-          function determineWinningReward() {
-            // Bu işlev önceki kodun aynısını içeriyor, sadece daha düzenli bir şekilde
-            if (closestItem) {
-              const actualIndex = closestItem.index % DISPLAY_ORDER.length;
-              console.log(`Closest visible item index: ${actualIndex}`);
-              
-              // Gerçekte göstergenin altında duran ödülü al
-              const actualWinningReward = DISPLAY_ORDER[actualIndex];
-              console.log(`Actual reward under indicator: ${actualWinningReward.label}`);
-              
-              // Kazanılan ödülü ayarla
-              setSpinResult(actualWinningReward);
-              
-              // Konfeti göster (eğer gerçek bir ödülse)
-              if (actualWinningReward.type !== 'try_again') {
-                setShowConfetti(true);
-              }
-              
-              // Analitik için log
-              console.log(`Reward earned: ${actualWinningReward.label}`);
-              
-              // Spin animasyonu tamamlandıktan sonra activity'yi güncelle
-              if (pendingActivity) {
-                // Activity'nin ödül bilgisini gerçekte kazanılan ödül olarak güncelle
-                const updatedActivity = {
-                  ...pendingActivity,
-                  reward: { label: actualWinningReward.label }
-                };
-                
-                // Şimdi activity listesine ekle - animasyon bittikten sonra
-                setActivities(prevActivities => [updatedActivity, ...prevActivities]);
-              }
-              
-              setIsSpinning(false);
-            } else {
-              // Görünür öğe bulunamadıysa varsayılan seçilen ödülü kullan
-              console.log(`Fallback to original selected reward: ${selectedReward.label}`);
-              setSpinResult(selectedReward);
-              
-              if (selectedReward.type !== 'try_again') {
-                setShowConfetti(true);
-              }
-              
-              // Yine de activity'yi ekleyelim, ama spin bittikten sonra
-              if (pendingActivity) {
-                setActivities(prevActivities => [pendingActivity, ...prevActivities]);
-              }
-              
-              setIsSpinning(false);
-            }
-          }
-        }, 300);
+        // Animasyon tamamlandı, şimdi ödül belirleme işlemine geçiyoruz
+        finalizeSpinAndDetermineReward();
       }
     };
     
     // Easing function for natural deceleration
     const cubicEaseOut = (t) => {
       return 1 - Math.pow(1 - t, 3);
+    };
+    
+    // Animasyon bitişini finalize eden ve ödülü belirleyen fonksiyon
+    const finalizeSpinAndDetermineReward = () => {
+      try {
+        // Konteyner ve göstergenin merkez konumunu belirle
+        const containerRect = spinContainerRef.current.getBoundingClientRect();
+        const indicatorCenterX = containerRect.left + (containerRect.width / 2);
+        
+        console.log("Container center position:", indicatorCenterX);
+        
+        // Göstergenin altına gelen ödülü bul
+        findRewardUnderIndicator(indicatorCenterX);
+      } catch (error) {
+        console.error("Error in finalizing spin:", error);
+        setIsSpinning(false);
+        setSpinResult(selectedReward); // Varsayılan ödülü kullan
+      }
+    };
+    
+    // Göstergenin altındaki ödülü bulan fonksiyon
+    const findRewardUnderIndicator = (indicatorCenterX) => {
+      try {
+        // Tüm görünür ödülleri kontrol et
+        const rewardItems = document.querySelectorAll('.reward-item');
+        if (rewardItems.length === 0) {
+          console.error("No reward items found in the DOM");
+          setIsSpinning(false);
+          return;
+        }
+        
+        let closestItem = null;
+        let minDistance = Number.MAX_VALUE;
+        
+        // Her ödülün göstergeye olan uzaklığını hesapla
+        rewardItems.forEach((item, i) => {
+          try {
+            const itemRect = item.getBoundingClientRect();
+            const itemCenterX = itemRect.left + (itemRect.width / 2);
+            const distance = Math.abs(indicatorCenterX - itemCenterX);
+            
+            const displayIndex = parseInt(item.getAttribute('data-index') || i % DISPLAY_ORDER.length);
+            const label = item.getAttribute('data-reward-label') || DISPLAY_ORDER[displayIndex].label;
+            
+            console.log(`Reward ${displayIndex} (${label}) - distance: ${distance.toFixed(2)}px, position: ${itemCenterX.toFixed(2)}`);
+            
+            if (distance < minDistance) {
+              minDistance = distance;
+              closestItem = {
+                element: item,
+                index: displayIndex,
+                distance: distance,
+                centerX: itemCenterX
+              };
+            }
+          } catch (itemErr) {
+            console.error("Error calculating distance for reward item:", itemErr);
+          }
+        });
+        
+        if (!closestItem) {
+          console.error("Could not find closest reward item");
+          setIsSpinning(false);
+          return;
+        }
+        
+        console.log(`Closest item distance: ${minDistance.toFixed(2)}px, threshold: 20px`);
+        
+        // Eğer uzaklık belirli bir eşiğin üzerindeyse, hizalama düzeltmesi yap
+        if (minDistance > 20) {
+          console.log(`Warning: Indicator might be in a gap, distance: ${minDistance.toFixed(2)}px`);
+          
+          const adjustmentNeeded = indicatorCenterX - closestItem.centerX;
+          
+          // Mevcut X pozisyonunu al
+          const currentTransform = getComputedStyle(spinRowRef.current).transform;
+          const matrix = new DOMMatrix(currentTransform);
+          const currentX = matrix.m41;
+          
+          // Yeni pozisyonu hesapla
+          const newPosition = currentX + adjustmentNeeded;
+          console.log(`Adjusting position by ${adjustmentNeeded.toFixed(2)}px, from ${currentX.toFixed(2)} to ${newPosition.toFixed(2)}`);
+          
+          // Yumuşak geçişle pozisyonu ayarla
+          spinRowRef.current.style.transition = 'transform 0.3s ease-out';
+          spinRowRef.current.style.transform = `translateX(${newPosition}px)`;
+          
+          // Son konumu güncelle
+          setLastPosition(newPosition);
+          
+          // Hizalama sonrası kısa bir bekleme ile ödülü belirle
+          setTimeout(() => {
+            applyWinningReward(closestItem);
+          }, 350);
+        } else {
+          // Doğrudan ödülü belirle
+          applyWinningReward(closestItem);
+        }
+      } catch (error) {
+        console.error("Error finding reward under indicator:", error);
+        setIsSpinning(false);
+        setSpinResult(selectedReward); // Varsayılan ödülü kullan
+      }
+    };
+    
+    // Kazanılan ödülü uygulayan fonksiyon
+    const applyWinningReward = (closestItem) => {
+      try {
+        // Doğru indeksi al
+        const actualIndex = closestItem.index;
+        console.log(`Final reward index: ${actualIndex}`);
+        
+        // Gerçek ödülü al
+        const actualWinningReward = DISPLAY_ORDER[actualIndex];
+        console.log(`Final winning reward: ${actualWinningReward.label}`);
+        
+        // Ödülü ayarla
+        setSpinResult(actualWinningReward);
+        
+        // Ödül sesini çal
+        playRewardSound(actualWinningReward.type);
+        
+        // Konfeti göster (eğer gerçek bir ödülse)
+        if (actualWinningReward.type !== 'try_again') {
+          setShowConfetti(true);
+        }
+        
+        // Activity kaydını güncelle
+        if (pendingActivity) {
+          const updatedActivity = {
+            ...pendingActivity,
+            reward: { label: actualWinningReward.label }
+          };
+          
+          // Activity listesine ekle
+          //setActivities(prevActivities => [updatedActivity, ...prevActivities]);
+        }
+        
+        // Spin durumunu güncelle
+        setIsSpinning(false);
+      } catch (error) {
+        console.error("Error applying winning reward:", error);
+        setIsSpinning(false);
+        setSpinResult(selectedReward); // Varsayılan ödülü kullan
+      }
     };
     
     // Start the animation
@@ -635,183 +639,176 @@ const SpinPage = () => {
     return `${days}d ago`;
   };
 
+  // Pop-up bileşeni
+  const RewardPopup = ({ reward, onClose }) => {
+    return (
+      <div className="reward-popup">
+        <div className="reward-popup-content">
+          <div className="reward-popup-icon">
+            {reward.type === 'try_again' ? '😢' : '🎉'}
+          </div>
+          <h3 className="reward-popup-title">
+            {reward.type === 'try_again' ? 'TEKRAR DENE!' : 'TEBRİKLER!'}
+          </h3>
+          <div className="reward-popup-message">
+            {reward.type === 'try_again' ? (
+              'Maalesef bu sefer kazanamadın. Tekrar dene!'
+            ) : (
+              <>
+                KAZANDIĞINIZ ÖDÜL: <span className="reward-highlight">{reward.label}</span>!
+              </>
+            )}
+          </div>
+          
+          {txHash && (
+            <div className="tx-info">
+              <p className="tx-status">
+                İşlem Durumu: 
+                <span className={`status-${txStatus}`}>
+                  {txStatus === "pending" ? " Hazırlanıyor" : 
+                   txStatus === "sent" ? " Gönderildi, Onay Bekleniyor" : 
+                   txStatus === "confirmed" ? " Onaylandı ✓" : 
+                   txStatus === "error" ? " Başarısız ✗" : " Bilinmiyor"}
+                </span>
+                
+                {(txStatus === "pending" || txStatus === "sent") && (
+                  <div className="loading-spinner small-spinner"></div>
+                )}
+              </p>
+              
+              <a 
+                href={`https://testnet.monadexplorer.com/tx/${txHash}`} 
+                className="tx-link"
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                Block Explorer'da Görüntüle
+              </a>
+            </div>
+          )}
+          
+          <button 
+            className="reward-popup-close" 
+            onClick={onClose}
+          >
+            DEVAM ET
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="spin-page">
-      {/* UnicornStudio arkaplan animasyonu */}
       <div className="unicorn-background">
         <div data-us-project="zKfL2gSUgaRLnbJp2M7p" style={{ width: '100%', height: '100%' }}></div>
       </div>
       
-      <div className="spin-header">
-        <h2>SPIN AND WIN</h2>
-        {!walletState.isConnected && (
-          <div className="wallet-warning">
-            <p>Spin yapmak için bir cüzdan bağlamanız gerekmektedir!</p>
-            <button 
-              className="connect-wallet-button"
-              onClick={() => {
-                if (window.ethereum) {
-                  connectWallet(); 
-                } else {
-                  alert("Bu işlem için bir web3 cüzdanı (MetaMask gibi) kurulu olması gereklidir. Lütfen web3 cüzdanınızı kurun ve siteyi yeniden ziyaret edin.");
-                }
-              }}
-            >
-              Cüzdan Bağla
-            </button>
-          </div>
-        )}
-      </div>
-      
-      <div className="spin-container" ref={spinContainerRef}>
-        <div className="rewards-row" ref={spinRowRef}>
-          {rewardRow.map((reward, index) => (
-            <div key={index} className="reward-item">
-              <div className={`reward-icon ${reward.type}`}>
-                {reward.type === 'try_again' ? (
-                  <div className="try-again-content">TRY AGAIN</div>
-                ) : reward.type === 'monad' ? (
-                  <div className="monad-token">
-                    <div className="monad-stripes"></div>
-                  </div>
-                ) : reward.type === 'mona' ? (
-                  <div className="mona-token">
-                    <span>$Ø</span>
-                  </div>
-                ) : (
-                  <div className="default-icon">?</div>
-                )}
-              </div>
-              <div className="reward-label">{reward.label}</div>
+      <div className="spin-content">
+        <div className="spin-header">
+          <h2>SPIN AND WIN</h2>
+          {!walletState.isConnected && (
+            <div className="wallet-warning">
+              <p>Spin yapmak için bir cüzdan bağlamanız gerekmektedir!</p>
+              <button 
+                className="connect-wallet-button"
+                onClick={() => {
+                  if (window.ethereum) {
+                    connectWallet(); 
+                  } else {
+                    alert("Bu işlem için bir web3 cüzdanı (MetaMask gibi) kurulu olması gereklidir. Lütfen web3 cüzdanınızı kurun ve siteyi yeniden ziyaret edin.");
+                  }
+                }}
+              >
+                Cüzdan Bağla
+              </button>
             </div>
-          ))}
-        </div>
-        
-        <div className="indicator-container">
-          <div className="indicator"></div>
-        </div>
-      </div>
-      
-      <div className="spin-status">
-        <h3>YOU HAVE {freeSpins} FREE SPINS</h3>
-        
-        <div className="spin-actions">
-          <button 
-            className={`spin-button 
-              ${isSpinning ? 'spinning' : ''} 
-              ${txStatus === 'initiating' ? 'tx-pending' : ''} 
-              ${txStatus === 'pending' ? 'tx-pending' : ''} 
-              ${txStatus === 'sent' ? 'tx-sent' : ''}
-            `} 
-            onClick={handleSpin} 
-            disabled={isSpinning || freeSpins <= 0 || !walletState.isConnected || txStatus === 'initiating' || txStatus === 'pending' || txStatus === 'sent'}
-          >
-            {isSpinning ? 'Spinning...' : 
-             txStatus === 'initiating' ? 'Initializing...' : 
-             txStatus === 'pending' ? 'Preparing Tx...' : 
-             txStatus === 'sent' ? 'Confirming...' : 
-             'Spin'}
-          </button>
-          
-          <button 
-            className="claim-button" 
-            onClick={handleClaimRewards}
-            disabled={!walletState.isConnected}
-          >
-            Claim Prizes
-          </button>
-        </div>
-      </div>
-      
-      {/* Pop-up şeklinde gösterilecek kazanılan ödül bildirimi */}
-      {spinResult && spinResult.type !== 'try_again' && (
-        <div className="reward-popup">
-          <div className="reward-popup-content">
-            <div className="reward-popup-icon">{showConfetti && '🎉'}</div>
-            <h3 className="reward-popup-title">CONGRATULATIONS!</h3>
-            <div className="reward-popup-message">
-              YOU WON <span className="reward-highlight">{spinResult.label}</span>!
-            </div>
-            
-            {/* Transaction bilgisini göster */}
-            {txHash && (
-              <div className="tx-info">
-                <p className="tx-status">
-                  Transaction Status: 
-                  <span className={`status-${txStatus}`}>
-                    {txStatus === "pending" ? " Preparing" : 
-                     txStatus === "sent" ? " Sent, Awaiting Confirmation" : 
-                     txStatus === "confirmed" ? " Confirmed ✓" : 
-                     txStatus === "error" ? " Failed ✗" : " Unknown"}
-                  </span>
-                  
-                  {(txStatus === "pending" || txStatus === "sent") && (
-                    <div className="loading-spinner small-spinner"></div>
-                  )}
-                </p>
-                
-                <p className="tx-explainer">
-                  {txStatus === "confirmed" ? 
-                    "Your transaction has been successfully confirmed on the blockchain." :
-                    txStatus === "sent" ? 
-                    "Your transaction has been sent to the network and is awaiting confirmation." :
-                    ""}
-                </p>
-                
-                <a 
-                  href={`https://testnet.monadexplorer.com/tx/${txHash}`} 
-                  className="tx-link"
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  View on Block Explorer
-                </a>
-              </div>
-            )}
-            
-            <button className="reward-popup-close" onClick={() => setSpinResult(null)}>CONTINUE</button>
-          </div>
-        </div>
-      )}
-      
-      <div className="activity-section">
-        <h3>ACTIVITY</h3>
-        <div className="activity-log">
-          {activities.length > 0 ? (
-            activities.map((activity, index) => (
-              <div key={index} className="activity-item">
-                <div className="activity-user">
-                  <div className="user-avatar"></div>
-                  <span className="user-address">
-                    {typeof activity.address === 'string' && activity.address.includes('0x') 
-                      ? `${activity.address.substring(0, 4)}...${activity.address.substring(activity.address.length - 4)}`
-                      : activity.address}
-                  </span>
-                </div>
-                <div className="activity-details">
-                  has won {activity.reward.label}
-                  {activity.txHash && (
-                    <a 
-                      href={`https://testnet.monadexplorer.com/tx/${activity.txHash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="activity-tx-link"
-                      title="View transaction on explorer"
-                    >
-                      <span className="tx-icon">↗</span>
-                    </a>
-                  )}
-                </div>
-                <div className="activity-time">
-                  {formatTimeAgo(activity.timestamp)}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="no-activity">No activity yet</div>
           )}
         </div>
+        
+        <div className="spin-container" ref={spinContainerRef}>
+          <div className="top-decoration"></div>
+          <div className="center-indicator"></div>
+          
+          <div className="rewards-container">
+            <div 
+              className="rewards-row" 
+              ref={spinRowRef}
+              style={{
+                transform: `translateX(${initialPosition}px)`,
+                transition: 'transform 0.2s linear'
+              }}
+            >
+              {rewardRow.map((reward, index) => (
+                <div 
+                  key={index} 
+                  className="reward-item"
+                  data-index={index % DISPLAY_ORDER.length}
+                  data-reward-type={reward.type}
+                  data-reward-label={reward.label}
+                >
+                  <div className={`reward-icon ${reward.type}`}>
+                    {reward.type === 'try_again' ? (
+                      <div className="try-again-content">TRY AGAIN</div>
+                    ) : reward.type === 'monad' ? (
+                      <div className="monad-token">
+                        <span className="monad-value">{reward.value}</span>
+                        <span className="monad-symbol">M</span>
+                      </div>
+                    ) : reward.type === 'mona' ? (
+                      <div className="mona-token">
+                        <span>$Ø</span>
+                      </div>
+                    ) : (
+                      <div className="default-icon">?</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="bottom-decoration"></div>
+        </div>
+        
+        <div className="spin-status">
+          <h3>YOU HAVE {freeSpins} FREE SPINS</h3>
+          
+          <div className="spin-actions">
+            <button 
+              className={`spin-button 
+                ${isSpinning ? 'spinning' : ''} 
+                ${txStatus === 'initiating' ? 'tx-pending' : ''} 
+                ${txStatus === 'pending' ? 'tx-pending' : ''} 
+                ${txStatus === 'sent' ? 'tx-sent' : ''}
+              `} 
+              onClick={handleSpin} 
+              disabled={isSpinning || freeSpins <= 0 || !walletState.isConnected || txStatus === 'initiating' || txStatus === 'pending' || txStatus === 'sent'}
+            >
+              {isSpinning ? 'Spinning...' : 
+               txStatus === 'initiating' ? 'Initializing...' : 
+               txStatus === 'pending' ? 'Preparing Tx...' : 
+               txStatus === 'sent' ? 'Confirming...' : 
+               'Spin'}
+            </button>
+            
+            <button 
+              className="claim-button" 
+              onClick={handleClaimRewards}
+              disabled={!walletState.isConnected}
+            >
+              Claim Prizes
+            </button>
+          </div>
+        </div>
       </div>
+
+      {spinResult && (
+        <RewardPopup 
+          reward={spinResult} 
+          onClose={() => setSpinResult(null)} 
+        />
+      )}
     </div>
   );
 };
