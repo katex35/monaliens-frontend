@@ -1,7 +1,22 @@
 import React, { useState, useRef } from 'react';
 import '../styles/BuildAliens.css';
 import html2canvas from 'html2canvas';
-import BaseBody from '../assets/Body/Base body.png';
+
+// Import all assets
+const importAll = (r) => {
+  let images = {};
+  r.keys().forEach((item) => { images[item.replace('./', '')] = r(item); });
+  return images;
+};
+
+// Import all assets from their respective folders
+const backgrounds = importAll(require.context('../assets/Background', false, /\.(png|jpe?g|svg)$/));
+const heads = importAll(require.context('../assets/Head', false, /\.(png|jpe?g|svg)$/));
+const eyes = importAll(require.context('../assets/Eyes', false, /\.(png|jpe?g|svg)$/));
+const mouths = importAll(require.context('../assets/Mouth', false, /\.(png|jpe?g|svg)$/));
+const hands = importAll(require.context('../assets/Hands', false, /\.(png|jpe?g|svg)$/));
+const clothes = importAll(require.context('../assets/Clothes', false, /\.(png|jpe?g|svg)$/));
+const baseBody = require('../assets/Body/Base body.png');
 
 const BuildAliens = () => {
   const previewRef = useRef(null);
@@ -82,6 +97,26 @@ const BuildAliens = () => {
     }
   };
 
+  // Helper function to get asset URL
+  const getAssetUrl = (part, filename) => {
+    switch(part) {
+      case 'background':
+        return backgrounds[filename];
+      case 'head':
+        return heads[filename];
+      case 'eyes':
+        return eyes[filename];
+      case 'mouth':
+        return mouths[filename];
+      case 'hands':
+        return hands[filename];
+      case 'clothes':
+        return clothes[filename];
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="build-aliens-page">
       <h1>BUILD-A-LIEN</h1>
@@ -92,13 +127,13 @@ const BuildAliens = () => {
             {/* Background is rendered first */}
             <div className="preview-layer">
               <img
-                src={`${process.env.PUBLIC_URL}/assets/Background/${selectedParts.background}`}
+                src={getAssetUrl('background', selectedParts.background)}
                 alt="Background"
               />
             </div>
             {/* Then base body */}
             <div className="preview-layer">
-              <img src={BaseBody} alt="Base body" />
+              <img src={baseBody} alt="Base body" />
             </div>
             {/* Then all other parts */}
             {Object.entries(selectedParts).map(([part, value]) => {
@@ -106,7 +141,7 @@ const BuildAliens = () => {
                 return (
                   <div key={part} className="preview-layer">
                     <img
-                      src={`${process.env.PUBLIC_URL}/assets/${part}/${value}`}
+                      src={getAssetUrl(part, value)}
                       alt={`${part} ${value}`}
                     />
                   </div>
