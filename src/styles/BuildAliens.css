@@ -1,0 +1,211 @@
+.build-aliens-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #6200EA 0%, #4A008E 30%, #250046 70%, #120023 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  padding-top: calc(80px + 2rem);
+}
+
+.build-aliens-page h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(98, 0, 234, 0.5);
+}
+
+.build-container {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-section {
+  flex: 1;
+  max-width: 550px;
+  position: relative;
+}
+
+.preview-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #40E0D0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(98, 0, 234, 0.3);
+}
+
+.preview-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-layer img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.controls-section {
+  flex: 0.8;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-group label {
+  font-size: 0.875rem;
+  color: #FFD700;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: none;
+  border-radius: 12px;
+  color: #0F0817;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%236200EA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+select:hover {
+  background-color: #f5f5f5;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #6200EA;
+}
+
+.download-button {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fff;
+  border: none;
+  border-radius: 12px;
+  color: #0F0817;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+}
+
+.download-button:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.download-button::before {
+  content: "⬇";
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .build-aliens-page {
+    padding: 1rem;
+    padding-top: calc(60px + 1rem);
+  }
+
+  .build-aliens-page h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .build-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .preview-section {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .controls-section {
+    width: 100%;
+    max-width: 280px;
+    min-width: unset;
+  }
+
+  select {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .control-group label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .build-aliens-page {
+    padding: 0.75rem;
+    padding-top: calc(60px + 0.75rem);
+  }
+
+  .build-aliens-page h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .preview-section,
+  .controls-section {
+    max-width: 100%;
+  }
+
+  .preview-container {
+    border-radius: 16px;
+  }
+
+  select {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .download-button {
+    padding: 0.625rem;
+    font-size: 0.75rem;
+  }
+} 

@@ -55,6 +55,7 @@ const Header = () => {
         
         <div className="header-center">
           <button className="nav-button" onClick={() => navigate('/spin')}>SPIN & WIN</button>
+          <button className="nav-button" onClick={() => navigate('/build-aliens')}>BUILD ALIENS</button>
           <button className="nav-button">RAFFLE</button>
           <button className="nav-button">STAKE</button>
         </div>

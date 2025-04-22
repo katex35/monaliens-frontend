@@ -2,13 +2,10 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
-import NFTScroll from './components/NFTScroll';
-import MagicEdenCard from './components/MagicEdenCard';
-import NFTStats from './components/NFTStats';
-import About from './components/About';
-import StakingStats from './components/StakingStats';
 import SpinPage from './components/SpinPage';
 import WalletProvider from './context/WalletContext';
+import HomePage from './components/HomePage';
+import BuildAliens from './components/BuildAliens';
 
 // UnicornStudio'yu yükleme ve başlatma fonksiyonu
 const initUnicornStudio = () => {
@@ -47,28 +44,6 @@ function App() {
     initUnicornStudio();
   }, []);
 
-  const HomePage = () => (
-    <>
-      <div className="first-page">
-        <div 
-          data-us-project="MdCXQQFs4xkeVlwhrGKV" 
-          style={{width: "100vw", height: "100vh"}}
-        />
-        <MagicEdenCard />
-        <NFTScroll />
-      </div>
-      <div className="second-page">
-        <div 
-          data-us-project="az8Fz0DbSJR8dREhGlUY" 
-          className="background-animation"
-        />
-        <NFTStats />
-        <About />
-        <StakingStats />
-      </div>
-    </>
-  );
-
   return (
     <WalletProvider>
       <Router>
@@ -78,6 +53,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/spin" element={<SpinPage />} />
+            <Route path="/build-aliens" element={<BuildAliens />} />
           </Routes>
         </div>
       </Router>
